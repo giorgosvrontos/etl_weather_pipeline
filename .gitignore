@@ -1,0 +1,10 @@
+# passwords
+.env
+
+# CSV files
+data/
+
+# Python & Jupyter temporary files
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
