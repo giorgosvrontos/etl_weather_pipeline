@@ -1,1 +1,1 @@
-0 * * * * /usr/local/bin/python /app/src/main.py >> /app/data/logs/etl_run.log 2>&1
+0 0 * * * /usr/local/bin/python /app/src/main.py >> /app/data/logs/etl_run.log 2>&1
