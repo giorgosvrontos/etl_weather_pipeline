@@ -24,11 +24,14 @@ services:
     volumes:
       - ../data/logs:/app/data/logs
       - ../src:/app/src
+      - ../docker/.env:/app/docker/.env
+    env_file:
+      - .env
     environment:
       DB_HOST: postgres_db
+      DB_NAME: weather_db
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      WEATHER_API_KEY: ${WEATHER_API_KEY}
     depends_on:
       - postgres_db
     networks:
