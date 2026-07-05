@@ -1,20 +1,27 @@
-🌦️ ETL Weather Pipeline (Open-Meteo to PostgreSQL & Metabase)
-A fully automated, modular, and idempotent Data Pipeline (ETL) developed in Python. This pipeline extracts meteorological, air quality, and marine data for specific ports from the Open-Meteo API, transforms the data, and loads it into a PostgreSQL database. Finally, the data is visualized through Metabase.
+# 🌦️ ETL Weather Pipeline (Open-Meteo to PostgreSQL & Metabase)
 
-🚀 Features
-Extract: Pulls historical data for the last 30 days from 3 different Open-Meteo endpoints (Weather, Air Quality, Marine Weather).
-Transform: Consolidates the data and enriches the dataset. Specifically, it translates the wmo_code by adding a new weather_description column (e.g., converting 71 to Snow fall or Rain).
-Load: Stores the data in PostgreSQL. The process is strictly idempotent, ensuring no duplicate records are created if the pipeline is rerun.
-Automation: Utilizes a Cronjob to automatically execute the ETL process once a day.
-Containerization: The entire environment is fully dockerized, running across 3 Docker containers (Postgres, Python ETL App, Metabase).
-Visualization: Integrated Metabase container for instant Dashboard creation and SQL querying.
-🛠️ Tech Stack
-Programming Language: Python 3
-Database: PostgreSQL
-Business Intelligence (BI): Metabase
-Infrastructure / DevOps: Docker, Docker Compose, Cron
-API: Open-Meteo (Free API)
-📂 Project Structure
+A fully automated, modular, and **idempotent** Data Pipeline (ETL) developed in Python. This pipeline extracts meteorological, air quality, and marine data for specific ports from the **Open-Meteo API**, transforms the data, and loads it into a PostgreSQL database. Finally, the data is visualized through **Metabase**.
+
+## 🚀 Features
+
+* **Extract:** Pulls historical data for the **last 30 days** from 3 different Open-Meteo endpoints (Weather, Air Quality, Marine Weather).
+* **Transform:** Consolidates the data and enriches the dataset. Specifically, it translates the `wmo_code` by adding a new `weather_description` column (e.g., converting `71` to `Snow fall` or `Rain`).
+* **Load:** Stores the data in PostgreSQL. The process is strictly **idempotent**, ensuring no duplicate records are created if the pipeline is rerun.
+* **Automation:** Utilizes a **Cronjob** to automatically execute the ETL process once a day.
+* **Containerization:** The entire environment is fully dockerized, running across 3 Docker containers (Postgres, Python ETL App, Metabase).
+* **Visualization:** Integrated Metabase container for instant Dashboard creation and SQL querying.
+
+## 🛠️ Tech Stack
+
+* **Programming Language:** Python 3
+* **Database:** PostgreSQL
+* **Business Intelligence (BI):** Metabase
+* **Infrastructure / DevOps:** Docker, Docker Compose, Cron
+* **API:** Open-Meteo (Free API)
+
+## 📂 Project Structure
+
+```text
 ETL_WEATHER_PIPELINE/
 ├── data/
 │   └── logs/                 # Log files (e.g., etl_run.log)
@@ -35,7 +42,7 @@ ETL_WEATHER_PIPELINE/
 │   └── main.py               # The main script that orchestrates the ETL process
 ├── .gitignore                # Files ignored by git
 └── requirements.txt          # Python dependencies (e.g., pandas, sqlalchemy, requests)
-
+```
 ## 📊 Data Schema
 
 The final dataset stored in PostgreSQL includes the following fields:
