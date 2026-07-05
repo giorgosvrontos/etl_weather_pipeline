@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15
+    container_name: weather_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: weather_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../sql_scripts/init.sql:/docker-entrypoint-initdb.d/init.sql 
+    networks:
+      - etl_network
+
+  etl_app:
+    build:
+      context: ..      
+      dockerfile: docker/Dockerfile
+    container_name: weather_etl_app
+    volumes:
+      - ../data/logs:/app/data/logs
+      - ../src:/app/src
+      - ../docker/.env:/app/docker/.env
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres_db
+      DB_NAME: weather_db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - postgres_db
+    networks:
+      - etl_network
+
+  metabase: 
+    image: metabase/metabase:latest
+    container_name: weather_metabase
+    ports:
+      - "3000:3000"  
+    volumes:
+      - metabase_data:/metabase.db 
+    environment:
+      MB_DB_TYPE: h2  
+    networks:
+      - etl_network
+    depends_on:
+      - postgres_db  
+
+volumes:
+  postgres_data: 
+  metabase_data:
+
+networks:
+  etl_network:
+    driver: bridge
