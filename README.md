@@ -32,7 +32,8 @@ ETL_WEATHER_PIPELINE/
 │   └── Dockerfile            # Instructions to build the Python container
 ├── documentation/            # Additional project documentation
 ├── sql_scripts/
-│   └── init.sql              # Initial script for creating tables in Postgres
+│     ├── init.sql            # Initial script for creating tables in Postgres
+      └── analysis.sql        # Script for analysis
 ├── src/
 │   ├── __pycache__/
 │   ├── .cache.sqlite         # Cache file for API requests (if applicable)
