@@ -4,11 +4,18 @@ import requests_cache
 from retry_requests import retry
 import pandas as pd 
 from datetime import datetime, timezone 
+import time 
+
+# Support function for cleaning and rounding values
+def clean_val(val, decimals=2):
+    if pd.isna(val): return None
+    return round(float(val), decimals)
 
 def extract_marine_data():
     
     cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
-    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+    # Increased backoff factor for slower retry attempts if API gets stuck
+    retry_session = retry(cache_session, retries=5, backoff_factor=0.5) 
     openmeteo = openmeteo_requests.Client(session=retry_session)
 
     marine_locations = {
@@ -28,7 +35,7 @@ def extract_marine_data():
         lon = coords["lon"]
         
         try:
-            # 1. WEATHER (Αλλαγή σε hourly, προσθήκη past_days)
+            # 1. WEATHER 
             url_weather = "https://api.open-meteo.com/v1/forecast"
             params_weather = {
                 "latitude": lat, "longitude": lon, 
@@ -72,7 +79,7 @@ def extract_marine_data():
             sst_array = hourly_marine.Variables(2).ValuesAsNumpy()
             current_vel_array = hourly_marine.Variables(3).ValuesAsNumpy()
 
-            # Time Array
+            # 4. TIME ARRAY & ZIP
             times = pd.date_range(
                 start=pd.to_datetime(hourly_weather.Time(), unit="s", utc=True),
                 end=pd.to_datetime(hourly_weather.TimeEnd(), unit="s", utc=True),
@@ -82,13 +89,7 @@ def extract_marine_data():
 
             created_at = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
-            
             for i in range(len(times)):
-                
-                def clean_val(val, decimals=2):
-                    if pd.isna(val): return None
-                    return round(float(val), decimals)
-
                 port_record = {
                     "port_name": port_name,
                     "created_at": created_at,
@@ -107,10 +108,15 @@ def extract_marine_data():
                     "sea_temperature_c": clean_val(sst_array[i], 1),
                     "ocean_current_velocity_kmh": clean_val(current_vel_array[i], 2)
                 }
-
                 final_marine_data.append(port_record)
                 
             print(f"✅ Success at {port_name} (Loaded {len(times)} historical records)")
+
+            # ΣΗΜΑΝΤΙΚΟ: Throttling / Rate Limiting
+            # Περιμένουμε 15 δευτερόλεπτα πριν ζητήσουμε τα δεδομένα για το επόμενο λιμάνι
+            # Αυτό δίνει χρόνο στον server του Open-Meteo να "ανασάνει" και αποτρέπει το 503 error.
+            print(f"⏳ Sleeping for 15 seconds to respect API limits...")
+            time.sleep(15)
 
         except Exception as e:
             print(f"❌ Error at {port_name}: {e}")
