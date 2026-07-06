@@ -10,7 +10,7 @@ import time
 def clean_val(val, decimals=2):
     if pd.isna(val): return None
     return round(float(val), decimals)
-
+    
 def extract_marine_data():
     
     cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
@@ -112,9 +112,7 @@ def extract_marine_data():
                 
             print(f"✅ Success at {port_name} (Loaded {len(times)} historical records)")
 
-            # ΣΗΜΑΝΤΙΚΟ: Throttling / Rate Limiting
-            # Περιμένουμε 15 δευτερόλεπτα πριν ζητήσουμε τα δεδομένα για το επόμενο λιμάνι
-            # Αυτό δίνει χρόνο στον server του Open-Meteo να "ανασάνει" και αποτρέπει το 503 error.
+            # Throttling / Rate Limiting
             print(f"⏳ Sleeping for 15 seconds to respect API limits...")
             time.sleep(15)
 
